@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 =begin
 
-    rmot is a motivator generator written in ruby with rmagick.
+    RMOAR is a motivator generator written in ruby with rmagick.
 
     Copyright (c) 2008-2009, Alexandre Perrin <kaworu@kaworu.ch>
     All rights reserved.
@@ -115,11 +115,11 @@ thumb = isrc.resize_to_fill(THUMB_WIDTH, THUMB_HEIGHT)
 thumb.border!(BORDER_WIDTH, BORDER_WIDTH, 'black')
 thumb.border!(BORDER_WIDTH, BORDER_WIDTH, 'white')
 
-motivator = img.composite(thumb, Magick::CenterGravity, 0, -35, Magick::OverCompositeOp)
+moar = img.composite(thumb, Magick::CenterGravity, 0, -35, Magick::OverCompositeOp)
 
 # show or save the result
 if Params.output
-    motivator.write(Params.output)
+    moar.write(Params.output)
 else
-    motivator.display
+    moar.display
 end
