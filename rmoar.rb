@@ -39,11 +39,6 @@ require 'RMagick'
 
 # contants
 BORDER_WIDTH = 2
-IMG_WITDH    = 800
-IMG_HEIGHT   = 600
-THUMB_WIDTH  = 600
-THUMB_HEIGHT = 400
-TITLE_YOFFSET =  THUMB_HEIGHT / 2 + 10
 TITLE_PSIZE  = 69
 MOTIVATOR_PSIZE = 42 / 2
 
@@ -81,6 +76,17 @@ else
     Params.src = ARGV.first
 end
 
+# load src
+isrc = Magick::Image.read(Params.src).first
+isrc.border!(BORDER_WIDTH, BORDER_WIDTH, 'black')
+isrc.border!(BORDER_WIDTH, BORDER_WIDTH, 'white')
+
+THUMB_WIDTH  = isrc.columns
+THUMB_HEIGHT = isrc.rows
+IMG_WITDH    = THUMB_WIDTH + 100
+IMG_HEIGHT   = THUMB_HEIGHT + 200
+TITLE_YOFFSET =  THUMB_HEIGHT / 2 - 20
+
 # create black caneva
 img  = Magick::Image.new(IMG_WITDH, IMG_HEIGHT) do
     self.background_color = 'black'
@@ -109,13 +115,7 @@ if Params.motivator
     end
 end
 
-# load src
-isrc = Magick::Image.read(Params.src).first
-thumb = isrc.resize_to_fill(THUMB_WIDTH, THUMB_HEIGHT)
-thumb.border!(BORDER_WIDTH, BORDER_WIDTH, 'black')
-thumb.border!(BORDER_WIDTH, BORDER_WIDTH, 'white')
-
-moar = img.composite(thumb, Magick::CenterGravity, 0, -35, Magick::OverCompositeOp)
+moar = img.composite(isrc, Magick::CenterGravity, 0, -60, Magick::OverCompositeOp)
 
 # show or save the result
 if Params.output
