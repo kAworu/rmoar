@@ -33,4 +33,93 @@
 
 =end
 
+require 'optparse'
 require 'RMagick'
+
+
+# contants
+BORDER_WIDTH = 2
+IMG_WITDH    = 800
+IMG_HEIGHT   = 600
+THUMB_WIDTH  = 600
+THUMB_HEIGHT = 400
+TITLE_YOFFSET =  THUMB_HEIGHT / 2 + 10
+TITLE_PSIZE  = 69
+MOTIVATOR_PSIZE = 42 / 2
+
+
+# user provided options
+Params = Struct.new(:src, :title, :motivator, :output).new
+
+# parse ARGV
+opts = OptionParser.new do |o|
+    o.banner = "usage: #{__FILE__} [options] image"
+
+    o.on('-h', '--help', 'show this help') do
+        puts o
+        exit
+    end
+
+    o.on('-t', '--title TITLE', String, 'set the title') do |t|
+        Params.title = t
+    end
+
+    o.on('-m', '--motivator SENTENCE', String, 'set the motivator') do |m|
+        Params.motivator = m
+    end
+
+    o.on('-o', '--output FILENAME', String, 'output file') do |f|
+        Params.output = f
+    end
+end
+opts.parse!
+
+if ARGV.size != 1
+    puts opts
+    exit
+else
+    Params.src = ARGV.first
+end
+
+# create black caneva
+img  = Magick::Image.new(IMG_WITDH, IMG_HEIGHT) do
+    self.background_color = 'black'
+end
+
+text = Magick::Draw.new
+text.font_family = 'times'
+text.font_style  = Magick::NormalStyle
+text.font_weight = Magick::NormalWeight
+text.pointsize   = TITLE_PSIZE
+text.gravity     = Magick::CenterGravity
+
+# add title
+if Params.title
+    text.annotate(img, 0, 0, 0, TITLE_YOFFSET, Params.title) do
+        self.fill = 'white'
+    end
+end
+
+# add motivator
+text.pointsize = MOTIVATOR_PSIZE
+text.font_family = 'roman'
+if Params.motivator
+    text.annotate(img, 0, 0, 0, TITLE_YOFFSET + 42, Params.motivator) do
+        self.fill = 'white'
+    end
+end
+
+# load src
+isrc = Magick::Image.read(Params.src).first
+thumb = isrc.resize_to_fill(THUMB_WIDTH, THUMB_HEIGHT)
+thumb.border!(BORDER_WIDTH, BORDER_WIDTH, 'black')
+thumb.border!(BORDER_WIDTH, BORDER_WIDTH, 'white')
+
+motivator = img.composite(thumb, Magick::CenterGravity, 0, -35, Magick::OverCompositeOp)
+
+# show or save the result
+if Params.output
+    motivator.write(Params.output)
+else
+    motivator.display
+end
