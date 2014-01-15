@@ -2,7 +2,7 @@
 =begin
   RMOAR is a motivator generator written in ruby with rmagick.
 
-  Copyright (c) 2008-2013
+  Copyright (c) 2008-2014
      Alexandre Perrin <alex@kaworu.ch>.  All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
